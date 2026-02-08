@@ -1,6 +1,3 @@
-/*
- * org.vosk.SpeechService, extended to support other recognizers.
- */
 package com.elishaazaria.sayboard.recognition
 
 import android.Manifest
@@ -14,7 +11,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.annotation.RequiresPermission
 import com.elishaazaria.sayboard.recognition.recognizers.Recognizer
-import org.vosk.android.RecognitionListener
 import java.io.IOException
 import kotlin.math.roundToInt
 

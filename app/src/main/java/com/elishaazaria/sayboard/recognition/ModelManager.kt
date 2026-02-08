@@ -15,7 +15,6 @@ import com.elishaazaria.sayboard.ime.ViewManager
 import com.elishaazaria.sayboard.recognition.recognizers.RecognizerSource
 import com.elishaazaria.sayboard.recognition.recognizers.providers.Providers
 import com.elishaazaria.sayboard.sayboardPreferenceModel
-import org.vosk.android.RecognitionListener
 import java.io.IOException
 import java.util.Locale
 import java.util.concurrent.Executor
@@ -46,11 +45,25 @@ class ModelManager(
         reloadModels()
     }
 
+    private fun saveSelectedModel() {
+        val source = currentRecognizerSource ?: return
+        val model = recognizerSourceModels.getOrNull(currentRecognizerSourceIndex) ?: return
+        prefs.lastSelectedModelPath.set(model.path)
+    }
+
+    private fun restoreSelectedModelIndex(): Int {
+        val lastPath = prefs.lastSelectedModelPath.get()
+        if (lastPath.isEmpty()) return 0
+        val index = recognizerSourceModels.indexOfFirst { it.path == lastPath }
+        return if (index >= 0) index else 0
+    }
+
     private fun initializeRecognizer(autoStart: Boolean, attributionContext: Context? = null) {
         if (recognizerSources.size == 0) {
             return
         }
         currentRecognizerSource = recognizerSources[currentRecognizerSourceIndex]
+        saveSelectedModel()
         listener.onRecognizerSource(currentRecognizerSource!!)
 
         val onLoaded = Observer { r: RecognizerSource? ->
@@ -134,7 +147,7 @@ class ModelManager(
             return false
         }
 
-        currentRecognizerSourceIndex = 0
+        currentRecognizerSourceIndex = restoreSelectedModelIndex()
         initializeRecognizer(autoStart, attributionContext)
         return true
     }

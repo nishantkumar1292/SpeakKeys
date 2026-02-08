@@ -114,6 +114,11 @@ class AppPrefs : PreferenceModel("example-app-preferences") {
         default = Color(0xFF16162A).toArgb()  // Deep navy
     )
 
+    val lastSelectedModelPath = string(
+        key = "s_last_selected_model_path",
+        default = ""
+    )
+
     // Whisper Cloud settings
     val whisperLanguage = string(
         key = "s_whisper_language",

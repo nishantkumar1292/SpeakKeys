@@ -34,8 +34,6 @@ import com.elishaazaria.sayboard.data.KeepScreenAwakeMode
 import com.elishaazaria.sayboard.recognition.ModelManager
 import com.elishaazaria.sayboard.recognition.recognizers.RecognizerSource
 import com.elishaazaria.sayboard.sayboardPreferenceModel
-import org.vosk.LibVosk
-import org.vosk.LogLevel
 import kotlin.math.roundToInt
 
 class IME : InputMethodService(), ModelManager.Listener {
@@ -64,8 +62,6 @@ class IME : InputMethodService(), ModelManager.Listener {
         Log.d("IME", "@onCreate")
 
         lifecycleOwner.onCreate()
-
-        LibVosk.setLogLevel(if (BuildConfig.DEBUG) LogLevel.INFO else LogLevel.WARNINGS)
 
         viewManager = ViewManager(this)
         viewManager.setListener(viewManagerListener)
@@ -180,13 +176,8 @@ class IME : InputMethodService(), ModelManager.Listener {
                     if (prefs.logicKeepScreenAwake.get() == KeepScreenAwakeMode.WHEN_LISTENING)
                         setKeepScreenOn(true)
                 } else {
-                    // For batch recognizers (like Whisper), stop to trigger transcription
-                    // For streaming recognizers (like Vosk), just pause
-                    if (modelManager.currentRecognizerSourceIsBatch) {
-                        modelManager.stop()
-                    } else {
-                        modelManager.pause(true)
-                    }
+                    // Stop to trigger transcription for batch/cloud recognizers
+                    modelManager.stop()
                     // Don't turn off screen here - wait for onFinalResult
                     // The transcription (especially for cloud APIs) may take several seconds
                 }
@@ -334,21 +325,21 @@ class IME : InputMethodService(), ModelManager.Listener {
         }
     }
 
-    override fun onResult(text: String) {
-        if (text.isEmpty()) return
-        Log.d("VoskIME", "Result: $text")
+    override fun onResult(text: String?) {
+        if (text.isNullOrEmpty()) return
+        Log.d("IME", "Result: $text")
         textManager.onText(text, TextManager.Mode.STANDARD)
     }
 
-    override fun onFinalResult(text: String) {
-        if (text.isEmpty()) return
-        Log.d("VoskIME", "Final result: $text")
+    override fun onFinalResult(text: String?) {
+        if (text.isNullOrEmpty()) return
+        Log.d("IME", "Final result: $text")
         textManager.onText(text, TextManager.Mode.FINAL)
     }
 
-    override fun onPartialResult(partialText: String) {
-        if (partialText == "") return
-        Log.d("VoskIME", "Partial result: $partialText")
+    override fun onPartialResult(partialText: String?) {
+        if (partialText.isNullOrEmpty()) return
+        Log.d("IME", "Partial result: $partialText")
 
         textManager.onText(partialText, TextManager.Mode.PARTIAL)
     }
@@ -382,7 +373,7 @@ class IME : InputMethodService(), ModelManager.Listener {
         )
     }
 
-    override fun onError(e: Exception) {
+    override fun onError(e: Exception?) {
         viewManager.errorMessageLD.postValue(R.string.mic_error_recognizer_error)
         viewManager.stateLD.postValue(ViewManager.STATE_ERROR)
     }

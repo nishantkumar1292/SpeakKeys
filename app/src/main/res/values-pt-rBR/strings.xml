@@ -34,30 +34,7 @@
     <string name="open_ime_switcher">Abrir o alternador de método de entrada</string>
     <string name="open_ime_note">Nota: você pode abrir o alternador de método de entrada pressionando o botão de microfone enquanto o teclado estiver aberto.</string>
     <!--  Models Preferences  -->
-    <string name="menu_models_add_server">Adicionar servidor Vosk</string>
-    <string name="dialog_add_vosk_server_title">Adicionar servidor Vosk</string>
-    <string name="dialog_add_vosk_server_hostname">Nome do host</string>
-    <string name="dialog_add_vosk_server_port">Porta</string>
-    <string name="dialog_add_vosk_server_add">Adicionar</string>
-    <string name="dialog_add_vosk_server_cancel">Cancelar</string>
-    <string name="models_download_state_unknown">Desconhecido</string>
-    <string name="models_download_state_pending">Pendente</string>
-    <string name="models_download_state_download_started">Baixando</string>
-    <string name="models_download_state_download_finished">Download concluído</string>
-    <string name="models_download_state_unzip_started">Descomprimindo</string>
-    <string name="models_download_state_unzip_finished">Descompressão concluída</string>
-    <string name="models_download_state_finished">Concluído</string>
-    <string name="models_download_state_error">Erro</string>
-    <string name="models_download_state_canceled">Cancelado</string>
-    <string name="models_download_state">Estado: %s</string>
-    <string name="models_pending_download_state">Estado: download pendente</string>
     <string name="models_model_display_name_null">Nulo</string>
-    <string name="models_download_dialog_title">Baixar modelo</string>
-    <string name="models_import_dialog_import">Importar</string>
-    <string name="models_import_dialog_title">Importar modelo</string>
-    <string name="models_import_dialog_text_before_link">Baixar um modelo Vosk manualmente</string>
-    <string name="models_import_dialog_text_link">da página do Vosk</string>
-    <string name="models_import_dialog_text_after_link">- certifique-se de escolher um modelo pequeno - e então selecione-o no seletor de arquivos após pressionar Importar</string>
     <!-- UI Preferences -->
     <string name="ui_light_theme_header">Tema claro</string>
     <string name="ui_light_theme_foreground_material_you_title">Utilizar cor de primeiro plano do Material You</string>
@@ -94,14 +71,6 @@
     <string name="keyboard_keys_dialog_key_label_label">Rótulo</string>
     <string name="keyboard_keys_dialog_key_text_label">Texto</string>
     <!--  Notifications  -->
-    <string name="notification_download_channel_name">Download de modelos</string>
-    <string name="notification_download_channel_description">Notificações do estado do download de modelo.</string>
-    <string name="notification_download_title">Baixando modelo</string>
-    <string name="notification_download_content_unknown">Carregando…</string>
-    <string name="notification_download_content_downloading">Baixando…</string>
-    <string name="notification_download_content_unzipping">Extraindo modelo…</string>
-    <string name="notification_download_content_finished">Download concluído!</string>
-    <string name="notification_download_content_error">Erro ao baixar o modelo</string>
     <string name="show_libraries">Mostrar as bibliotecas utilizadas</string>
     <string name="logic_return_to_default_ime_title">Retornar ao método de entrada padrão</string>
     <string name="logic_return_to_default_ime_summary">Retornar ao método de entrada padrão em vez do anterior quando o botão voltar é pressionado.</string>

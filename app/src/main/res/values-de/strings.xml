@@ -43,27 +43,9 @@
 
 
     <!--  Models Preferences  -->
-    <string name="menu_models_add_server">Vosk Server zufügen</string>
-    <string name="dialog_add_vosk_server_title">Vosk Server zufügen</string>
-    <string name="dialog_add_vosk_server_add">Zufügen</string>
-    <string name="dialog_add_vosk_server_cancel">Abbruch</string>
 
-    <string name="models_download_state_unknown">Unbekannt</string>
-    <string name="models_download_state_pending">in Arbeit</string>
-    <string name="models_download_state_download_started">Am Runterladen</string>
-    <string name="models_download_state_download_finished">Download Fertig</string>
-    <string name="models_download_state_unzip_started">Unzippen</string>
-    <string name="models_download_state_unzip_finished">Unzippen Fertig</string>
-    <string name="models_download_state_finished">Fertig</string>
-    <string name="models_download_state_error">Fehler</string>
-    <string name="models_download_state_canceled">Abegebrochen</string>
 
-    <string name="models_download_dialog_title">Download Modell</string>
 
-    <string name="models_import_dialog_title">Importiere Modell</string>
-    <string name="models_import_dialog_text_before_link">Manueller download eines Vosk Modells von </string>
-    <string name="models_import_dialog_text_link">Die Vosk Internetseite</string>
-    <string name="models_import_dialog_text_after_link"> - Stelle sicher ein "kleines" Modell zu nehmen - Nachdem du auf Import klickst und wähle es dann in der Dateiauswahl</string>
 
     <!-- UI Preferences -->
     <string name="ui_light_theme_header">Helles Thema</string>
@@ -108,12 +90,4 @@
 
 
     <!--  Notifications  -->
-    <string name="notification_download_channel_name">Modell download</string>
-    <string name="notification_download_channel_description">Modell download Status Benachrichtigungen.</string>
-    <string name="notification_download_title">Downloade Modell</string>
-    <string name="notification_download_content_unknown">Lade…</string>
-    <string name="notification_download_content_downloading">Laden in Arbeit…</string>
-    <string name="notification_download_content_unzipping">Extrahiere Modell…</string>
-    <string name="notification_download_content_finished">Download Fertig!</string>
-    <string name="notification_download_content_error">Fehler downloading Modell</string>
 </resources>

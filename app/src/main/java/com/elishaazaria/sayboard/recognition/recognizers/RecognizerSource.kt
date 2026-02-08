@@ -17,7 +17,7 @@ interface RecognizerSource {
     /**
      * If true, this recognizer processes audio in batch (like Whisper).
      * Tapping mic to "pause" should actually stop recording to trigger transcription.
-     * If false, this recognizer streams results in real-time (like Vosk).
+     * If false, this recognizer streams results in real-time.
      */
     val isBatchRecognizer: Boolean
         get() = false

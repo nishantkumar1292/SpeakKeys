@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.protobuf'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 apply plugin: 'com.mikepenz.aboutlibraries.plugin'
@@ -20,7 +19,6 @@ android {
         targetSdkVersion 34
         versionCode 402010
         versionName "v4.2.1"
-        ndkVersion "r25c"
 
         // OpenAI API key from local.properties
         buildConfigField "String", "OPENAI_API_KEY", "\"${localProperties.getProperty('OPENAI_API_KEY', '')}\""
@@ -46,7 +44,6 @@ android {
 
     android.applicationVariants.configureEach { variant ->
         variant.outputs.configureEach { output ->
-//            output.outputFileName = "${variant.getFlavorName()}-${variant.buildType.name}-v${versionCode}_${versionName}-${new Date().format('ddMMMyyyy_HH-mm')}-${output.getFilter(com.android.build.OutputFile.ABI)}.apk"
             var abi_name = output.getFilter(output.ABI) ? output.getFilter(output.ABI) : "Universal"
             output.outputFileName = "Sayboard_${abi_name}.apk"
         }
@@ -114,51 +111,14 @@ android.applicationVariants.configureEach { variant ->
     }
 }
 
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:3.24.4"
-    }
-    plugins {
-        grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.52.0'
-        }
-    }
-    generateProtoTasks {
-        all().each { task ->
-            task.builtins {
-                java { option 'lite' }
-            }
-            task.plugins {
-                grpc { option 'lite' }
-            }
-        }
-    }
-}
-
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'net.java.dev.jna:jna:5.13.0@aar'
-    implementation 'com.alphacephei:vosk-android:0.3.32'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.material:material:1.11.0'
 
-
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
-//    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
-//    implementation 'androidx.lifecycle:lifecycle-extensions:2.6.2'
-//    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
-//    implementation 'androidx.navigation:navigation-fragment:2.7.4'
-//    implementation 'androidx.navigation:navigation-ui:2.7.4'
-//    implementation 'androidx.preference:preference:1.2.1'
 
-    implementation 'org.greenrobot:eventbus:3.3.1'
-    implementation 'dev.gustavoavila:java-android-websocket-client:2.0.1'
-    implementation 'io.grpc:grpc-okhttp:1.52.0'
-    implementation 'io.grpc:grpc-protobuf-lite:1.52.0'
-    implementation 'io.grpc:grpc-stub:1.52.0'
-    compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // necessary for Java 9+
-
-    // OkHttp for Whisper Cloud API calls
+    // OkHttp for cloud API calls
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0'
@@ -174,16 +134,7 @@ dependencies {
     implementation composeBom
     androidTestImplementation composeBom
 
-    // Choose one of the following:
-    // Material Design 3
-//    implementation 'androidx.compose.material3:material3'
-    // or Material Design 2
     implementation 'androidx.compose.material:material'
-    // or skip Material Design and build directly on top of foundational components
-//    implementation 'androidx.compose.foundation:foundation'
-    // or only import the main APIs for the underlying toolkit systems,
-    // such as input and measurement/layout
-//    implementation 'androidx.compose.ui:ui'
 
     // Android Studio Preview support
     implementation 'androidx.compose.ui:ui-tooling-preview'
@@ -193,23 +144,11 @@ dependencies {
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
-    // Optional - Included automatically by material, only add when you need
-    // the icons but not the material library (e.g. when using Material3 or a
-    // custom design system based on Foundation)
-//    implementation 'androidx.compose.material:material-icons-core'
-    // Optional - Add full set of material icons
     implementation 'androidx.compose.material:material-icons-extended'
-    // Optional - Add window size utils
     implementation 'androidx.compose.material3:material3-window-size-class'
 
-    // Optional - Integration with activities
     implementation 'androidx.activity:activity-compose:1.8.2'
-    // Optional - Integration with ViewModels
-//    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
-    // Optional - Integration with LiveData
     implementation 'androidx.compose.runtime:runtime-livedata'
-    // Optional - Integration with RxJava
-//    implementation 'androidx.compose.runtime:runtime-rxjava2'
 
     implementation "com.mikepenz:aboutlibraries-compose:11.1.4"
 }

@@ -1,12 +1,10 @@
 package com.elishaazaria.sayboard
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
@@ -30,7 +28,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
-import com.elishaazaria.sayboard.downloader.FileDownloader
 import com.elishaazaria.sayboard.theme.AppTheme
 import com.elishaazaria.sayboard.ui.GrantPermissionUi
 import com.elishaazaria.sayboard.ui.KeyboardSettingsUi
@@ -47,7 +44,6 @@ class SettingsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Tools.createNotificationChannel(this)
 
         checkPermissions()
 
@@ -119,10 +115,6 @@ class SettingsActivity : ComponentActivity() {
                         })
                 }
             }
-        }, floatingActionButton = {
-            if (selectedIndex == 0) {
-                modelSettingsUi.Fab()
-            }
         }) {
             Box(
                 modifier = Modifier
@@ -139,36 +131,9 @@ class SettingsActivity : ComponentActivity() {
         }
     }
 
-    fun importModel() {
-        val intent = Intent()
-        intent.type = "application/zip"
-        intent.action = Intent.ACTION_GET_CONTENT
-        //launch picker screen
-        resultLauncher.launch(intent)
-    }
-
-    private var resultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                // There are no request codes
-                val intent: Intent = result.data ?: return@registerForActivityResult
-                FileDownloader.importModel(intent.data!!, this)
-            }
-        }
-
     private fun checkPermissions() {
         micGranted.postValue(Tools.isMicrophonePermissionGranted(this))
         imeGranted.postValue(Tools.isIMEEnabled(this))
-    }
-
-    override fun onStart() {
-        super.onStart()
-        modelSettingsUi.onStart()
-    }
-
-    override fun onStop() {
-        modelSettingsUi.onStop()
-        super.onStop()
     }
 
     override fun onResume() {
@@ -178,10 +143,6 @@ class SettingsActivity : ComponentActivity() {
     }
 
     companion object {
-        /* Used to handle permission request */
         private const val PERMISSIONS_REQUEST_RECORD_AUDIO = 1
-        public const val PERMISSION_REQUEST_POST_NOTIFICATIONS = 1
-
-//        private const val FILE_PICKER_REQUEST_CODE = 1
     }
 }

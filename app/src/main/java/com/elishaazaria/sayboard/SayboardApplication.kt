@@ -3,7 +3,6 @@ package com.elishaazaria.sayboard
 import android.app.Application
 import com.elishaazaria.sayboard.AppCtx.setAppCtx
 import dev.patrickgold.jetpref.datastore.JetPref
-import org.greenrobot.eventbus.EventBus
 
 class SayboardApplication : Application() {
     private val prefs by sayboardPreferenceModel()
@@ -20,8 +19,6 @@ class SayboardApplication : Application() {
         // Initialize your datastore here (required)
         prefs.initializeBlocking(this)
 
-        EventBus.builder().logNoSubscriberMessages(false).sendNoSubscriberEvent(false)
-            .installDefaultEventBus()
         setAppCtx(this)
     }
 }
