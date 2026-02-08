@@ -183,13 +183,18 @@ class MySpeechService @RequiresPermission(Manifest.permission.RECORD_AUDIO) cons
                 }
             }
             recorder.stop()
+            // Always get final result (needed for batch recognizers like Whisper)
+            // Only skip the callback if paused AND result is empty
+            val finalResult = recognizer.getFinalResult()
             if (!paused) {
                 if (timeoutSamples != -1 && remainingSamples <= 0) {
                     mainHandler.post { listener.onTimeout() }
                 } else {
-                    val finalResult = recognizer.getFinalResult()
                     mainHandler.post { listener.onFinalResult(finalResult) }
                 }
+            } else if (finalResult.isNotEmpty()) {
+                // Even when paused, if there's a result (batch recognizer), show it
+                mainHandler.post { listener.onFinalResult(finalResult) }
             }
         }
     }

@@ -94,7 +94,7 @@ class AppPrefs : PreferenceModel("example-app-preferences") {
     )
     val uiDayForeground = int(
         key = "c_day_foreground_color",
-        default = Color(0xFF377A00).toArgb()
+        default = Color(0xFF4A9E99).toArgb()  // Teal
     )
     val uiDayBackground = int(
         key = "c_day_background_color",
@@ -107,10 +107,30 @@ class AppPrefs : PreferenceModel("example-app-preferences") {
     )
     val uiNightForeground = int(
         key = "c_night_foreground_color",
-        default = Color(0xFF66BB6A).toArgb()
+        default = Color(0xFF5CB8B2).toArgb()  // Soft teal
     )
     val uiNightBackground = int(
         key = "c_night_background_color",
-        default = Color(0xFF000000).toArgb()
+        default = Color(0xFF16162A).toArgb()  // Deep navy
+    )
+
+    // Whisper Cloud settings
+    val whisperLanguage = string(
+        key = "s_whisper_language",
+        default = ""  // Empty = auto-detect
+    )
+
+    // Prompt to guide transcription style (e.g., for Romanized Hindi/Hinglish output)
+    // A prompt with Romanized Hindi examples helps Whisper output in that style
+    val whisperPrompt = string(
+        key = "s_whisper_prompt",
+        default = "Yeh ek Hindi sentence hai jo Roman script mein likha gaya hai. Main aapko batana chahta hoon ki aaj mausam bahut achha hai."
+    )
+
+    // Enable built-in Devanagari to Roman transliteration
+    // When enabled, Hindi output like "नमस्ते" becomes "namaste"
+    val whisperTransliterateToRoman = boolean(
+        key = "b_whisper_transliterate_to_roman",
+        default = false
     )
 }

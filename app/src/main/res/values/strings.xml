@@ -138,4 +138,11 @@
     <string name="notification_download_content_unzipping">Extracting Model…</string>
     <string name="notification_download_content_finished">Download Finished!</string>
     <string name="notification_download_content_error">Error downloading Model</string>
+
+    <!--  Whisper Cloud  -->
+    <string name="error_invalid_api_key">Invalid or missing API key</string>
+
+    <!--  Sarvam Cloud  -->
+    <string name="error_sarvam_missing_key">Missing Sarvam API subscription key</string>
+    <string name="error_sarvam_api_failure">Sarvam API request failed</string>
 </resources>

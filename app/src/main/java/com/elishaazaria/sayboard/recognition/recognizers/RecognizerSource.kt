@@ -11,8 +11,16 @@ interface RecognizerSource {
     val recognizer: Recognizer
     fun close(freeRAM: Boolean)
     val stateLD: LiveData<RecognizerState>
-    
+
     val addSpaces: Boolean
+
+    /**
+     * If true, this recognizer processes audio in batch (like Whisper).
+     * Tapping mic to "pause" should actually stop recording to trigger transcription.
+     * If false, this recognizer streams results in real-time (like Vosk).
+     */
+    val isBatchRecognizer: Boolean
+        get() = false
 
     val closed: Boolean
 

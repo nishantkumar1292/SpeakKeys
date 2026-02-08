@@ -180,9 +180,15 @@ class IME : InputMethodService(), ModelManager.Listener {
                     if (prefs.logicKeepScreenAwake.get() == KeepScreenAwakeMode.WHEN_LISTENING)
                         setKeepScreenOn(true)
                 } else {
-                    modelManager.pause(true)
-                    if (prefs.logicKeepScreenAwake.get() == KeepScreenAwakeMode.WHEN_LISTENING)
-                        setKeepScreenOn(false)
+                    // For batch recognizers (like Whisper), stop to trigger transcription
+                    // For streaming recognizers (like Vosk), just pause
+                    if (modelManager.currentRecognizerSourceIsBatch) {
+                        modelManager.stop()
+                    } else {
+                        modelManager.pause(true)
+                    }
+                    // Don't turn off screen here - wait for onFinalResult
+                    // The transcription (especially for cloud APIs) may take several seconds
                 }
             } else {
                 modelManager.start()
@@ -350,8 +356,9 @@ class IME : InputMethodService(), ModelManager.Listener {
     override fun onStateChanged(state: ModelManager.State) {
         if (state == ModelManager.State.STATE_STOPPED) {
             currentRecognizerSource?.stateLD?.removeObserver(viewManager)
+            // Update UI to show stopped/ready state
+            viewManager.stateLD.postValue(ViewManager.STATE_READY)
         } else {
-
             viewManager.stateLD.postValue(
                 when (state) {
                     ModelManager.State.STATE_INITIAL -> ViewManager.STATE_INITIAL

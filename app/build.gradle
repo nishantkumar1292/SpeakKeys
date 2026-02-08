@@ -5,6 +5,13 @@ apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 
 
+// Load local.properties for API keys
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localProperties.load(new FileInputStream(localPropertiesFile))
+}
+
 android {
     compileSdk 34
     defaultConfig {
@@ -14,6 +21,12 @@ android {
         versionCode 402010
         versionName "v4.2.1"
         ndkVersion "r25c"
+
+        // OpenAI API key from local.properties
+        buildConfigField "String", "OPENAI_API_KEY", "\"${localProperties.getProperty('OPENAI_API_KEY', '')}\""
+
+        // Sarvam API subscription key from local.properties
+        buildConfigField "String", "SARVAM_API_SUBSCRIPTION_KEY", "\"${localProperties.getProperty('SARVAM_API_SUBSCRIPTION_KEY', '')}\""
     }
     buildTypes {
         release {
@@ -49,6 +62,7 @@ android {
     buildFeatures {
         viewBinding true
         compose true
+        buildConfig true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
@@ -144,6 +158,8 @@ dependencies {
     implementation 'io.grpc:grpc-stub:1.52.0'
     compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // necessary for Java 9+
 
+    // OkHttp for Whisper Cloud API calls
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0"

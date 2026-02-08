@@ -41,7 +41,11 @@ class TextManager(private val ime: IME, private val modelManager: ModelManager) 
             checkAddSpaceAndCapitalize()
         }
 
-        val ic = ime.currentInputConnection ?: return
+        val ic = ime.currentInputConnection
+        if (ic == null) {
+            Log.e(TAG, "currentInputConnection is NULL! Cannot insert text: $text")
+            return
+        }
 
         var spacedText = text
         if (prefs.logicAutoCapitalize.get() && capitalize) {
@@ -63,11 +67,14 @@ class TextManager(private val ime: IME, private val modelManager: ModelManager) 
                     capitalize = it
                 }
                 composing = false
-                ic.commitText(spacedText, 1)
+                Log.d(TAG, "Committing text: '$spacedText'")
+                val success = ic.commitText(spacedText, 1)
+                Log.d(TAG, "commitText result: $success")
             }
 
             Mode.PARTIAL -> {
                 composing = true
+                Log.d(TAG, "Setting composing text: '$spacedText'")
                 ic.setComposingText(spacedText, 1)
             }
 

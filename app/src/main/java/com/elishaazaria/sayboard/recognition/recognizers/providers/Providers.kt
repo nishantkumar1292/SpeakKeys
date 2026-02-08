@@ -8,12 +8,18 @@ import com.elishaazaria.sayboard.recognition.recognizers.RecognizerSource
 
 class Providers(context: Context) {
     private val voskLocalProvider: VoskLocalProvider
+    private val whisperCloudProvider: WhisperCloudProvider
+    private val sarvamCloudProvider: SarvamCloudProvider
     private val providers: List<RecognizerSourceProvider>
 
     init {
         val providersM = mutableListOf<RecognizerSourceProvider>()
         voskLocalProvider = VoskLocalProvider(context)
         providersM.add(voskLocalProvider)
+        whisperCloudProvider = WhisperCloudProvider(context)
+        providersM.add(whisperCloudProvider)
+        sarvamCloudProvider = SarvamCloudProvider(context)
+        providersM.add(sarvamCloudProvider)
         if (Tools.VOSK_SERVER_ENABLED) {
             providersM.add(VoskServerProvider())
         }
@@ -23,7 +29,8 @@ class Providers(context: Context) {
     fun recognizerSourceForModel(localModel: InstalledModelReference): RecognizerSource? {
         return when (localModel.type) {
             ModelType.VoskLocal -> voskLocalProvider.recognizerSourceForModel(localModel)
-            else -> null
+            ModelType.WhisperCloud -> whisperCloudProvider.recognizerSourceForModel(localModel)
+            ModelType.SarvamCloud -> sarvamCloudProvider.recognizerSourceForModel(localModel)
         }
     }
 

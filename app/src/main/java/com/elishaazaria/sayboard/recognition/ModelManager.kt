@@ -64,6 +64,9 @@ class ModelManager(
     val currentRecognizerSourceAddSpaces: Boolean
         get() = currentRecognizerSource?.addSpaces ?: true
 
+    val currentRecognizerSourceIsBatch: Boolean
+        get() = currentRecognizerSource?.isBatchRecognizer ?: false
+
     fun switchToNextRecognizer(autoStart: Boolean, attributionContext: Context? = null) {
         if (recognizerSources.size == 0 || recognizerSources.size == 1) return
         stop(true)
@@ -145,10 +148,12 @@ class ModelManager(
             return
         }
         if (currentRecognizerSource!!.closed) {
-            Log.w(
+            Log.d(
                 TAG,
-                "Trying to start a closed Recognizer Source: ${currentRecognizerSource!!.name}"
+                "Recognizer Source is closed, re-initializing: ${currentRecognizerSource!!.name}"
             )
+            // Re-initialize the closed recognizer before starting
+            initializeRecognizer(true, attributionContext)
             return
         }
         if (isRunning || speechService != null) {
