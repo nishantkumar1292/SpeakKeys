@@ -1,7 +1,6 @@
 package com.elishaazaria.sayboard.recognition.recognizers.providers
 
 import android.content.Context
-import android.util.Log
 import com.elishaazaria.sayboard.data.InstalledModelReference
 import com.elishaazaria.sayboard.data.ModelType
 import com.elishaazaria.sayboard.recognition.recognizers.RecognizerSource
@@ -10,10 +9,6 @@ import com.elishaazaria.sayboard.sayboardPreferenceModel
 import java.util.Locale
 
 class WhisperCloudProvider(private val context: Context) : RecognizerSourceProvider {
-    companion object {
-        private const val TAG = "WhisperCloudProvider"
-    }
-
     private val prefs by sayboardPreferenceModel()
 
     override fun getInstalledModels(): List<InstalledModelReference> {
@@ -34,15 +29,10 @@ class WhisperCloudProvider(private val context: Context) : RecognizerSourceProvi
     }
 
     override fun recognizerSourceForModel(localModel: InstalledModelReference): RecognizerSource? {
-        Log.d(TAG, "recognizerSourceForModel called for: ${localModel.type}")
         if (localModel.type != ModelType.WhisperCloud) return null
 
         val apiKey = prefs.openaiApiKey.get()
-        Log.d(TAG, "API key length: ${apiKey.length}, empty: ${apiKey.isEmpty()}")
-        if (apiKey.isEmpty()) {
-            Log.e(TAG, "API key is empty!")
-            return null
-        }
+        if (apiKey.isEmpty()) return null
 
         // Get preferred language from settings
         val languageCode = prefs.whisperLanguage.get()
@@ -58,7 +48,6 @@ class WhisperCloudProvider(private val context: Context) : RecognizerSourceProvi
         // Get transliteration preference
         val transliterateToRoman = prefs.whisperTransliterateToRoman.get()
 
-        Log.d(TAG, "Creating WhisperCloud with locale: $locale, prompt: $prompt, transliterate: $transliterateToRoman")
         return WhisperCloud(apiKey, locale, prompt, transliterateToRoman)
     }
 }

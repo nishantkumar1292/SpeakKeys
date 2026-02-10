@@ -327,20 +327,16 @@ class IME : InputMethodService(), ModelManager.Listener {
 
     override fun onResult(text: String?) {
         if (text.isNullOrEmpty()) return
-        Log.d("IME", "Result: $text")
         textManager.onText(text, TextManager.Mode.STANDARD)
     }
 
     override fun onFinalResult(text: String?) {
         if (text.isNullOrEmpty()) return
-        Log.d("IME", "Final result: $text")
         textManager.onText(text, TextManager.Mode.FINAL)
     }
 
     override fun onPartialResult(partialText: String?) {
         if (partialText.isNullOrEmpty()) return
-        Log.d("IME", "Partial result: $partialText")
-
         textManager.onText(partialText, TextManager.Mode.PARTIAL)
     }
 

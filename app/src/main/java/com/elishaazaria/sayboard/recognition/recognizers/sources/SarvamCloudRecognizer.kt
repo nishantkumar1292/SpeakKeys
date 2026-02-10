@@ -117,11 +117,9 @@ class SarvamCloudRecognizer(
                     val text = json.optString("transcript", "").trim()
 
                     lastResult = removeSpaceForLocale(text)
-                    Log.d(TAG, "Transcription successful: $lastResult")
                 }
             } else {
-                val errorBody = response.body?.string()
-                Log.e(TAG, "API error: ${response.code} - $errorBody")
+                Log.e(TAG, "API error: ${response.code}")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Transcription failed", e)

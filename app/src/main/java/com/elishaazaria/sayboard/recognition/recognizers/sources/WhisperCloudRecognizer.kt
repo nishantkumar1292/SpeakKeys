@@ -99,12 +99,10 @@ class WhisperCloudRecognizer(
                     // Add language hint if specified
                     locale?.language?.takeIf { it.isNotEmpty() && it != "und" }?.let { lang ->
                         addFormDataPart("language", lang)
-                        Log.d(TAG, "Using language hint: $lang")
                     }
                     // Add prompt if specified (useful for Romanized/Hinglish output)
                     if (prompt.isNotEmpty()) {
                         addFormDataPart("prompt", prompt)
-                        Log.d(TAG, "Using prompt: $prompt")
                     }
                 }
                 .build()
@@ -127,15 +125,12 @@ class WhisperCloudRecognizer(
                     // Apply Devanagari to Roman transliteration if enabled
                     if (transliterateToRoman) {
                         text = DevanagariTransliterator.transliterate(text)
-                        Log.d(TAG, "Applied transliteration: $text")
                     }
 
                     lastResult = removeSpaceForLocale(text)
-                    Log.d(TAG, "Transcription successful: $lastResult")
                 }
             } else {
-                val errorBody = response.body?.string()
-                Log.e(TAG, "API error: ${response.code} - $errorBody")
+                Log.e(TAG, "API error: ${response.code}")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Transcription failed", e)
