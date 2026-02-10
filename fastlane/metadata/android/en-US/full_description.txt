@@ -4,10 +4,10 @@
   <li><strong>OpenAI Whisper</strong> - multilingual speech recognition</li>
 </ul>
 <br/>
+<p>API keys are configured in Settings > API tab. Only backends with a configured key are available.</p>
+<br/>
 <p>Sayboard uses the following permissions:</p>
 <ul>
   <li>INTERNET - required for cloud-based speech recognition. Audio is sent to Sarvam AI and/or OpenAI for transcription.</li>
   <li>RECORD_AUDIO - this is a voice keyboard after all.</li>
-  <li>FOREGROUND_SERVICE - for the speech recognition service.</li>
-  <li>FOREGROUND_SERVICE_MICROPHONE - for the speech recognition service.</li>
 </ul>

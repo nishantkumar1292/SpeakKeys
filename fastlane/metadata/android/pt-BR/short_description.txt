@@ -1,1 +1,1 @@
-Um método de entrada por voz para Android usando a biblioteca Vosk
+Um teclado de voz com reconhecimento de fala na nuvem via Sarvam AI e OpenAI Whisper
