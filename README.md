@@ -36,8 +36,6 @@ Only backends with a configured API key will be available in the app.
 - FOREGROUND_SERVICE_MICROPHONE - for the RecognitionService.
 - QUERY_ALL_PACKAGES - due to a bug in Android, this permission is required for a speech RecognitionService to work properly (see https://github.com/Kaljurand/K6nele-service/issues/9).
 
-## Screenshot
+## Demo
 
-Screenshot of Sayboard:
-
-https://github.com/ElishaAz/Sayboard/assets/26592879/58f1421e-0e10-488f-a7fa-4aa702f1cee2
+https://github.com/user-attachments/assets/c64fb21e-2095-4a8b-b4b2-952d09631604
