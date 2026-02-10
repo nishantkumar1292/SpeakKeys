@@ -12,10 +12,10 @@ class Providers(context: Context) {
 
     init {
         val providersM = mutableListOf<RecognizerSourceProvider>()
-        whisperCloudProvider = WhisperCloudProvider(context)
-        providersM.add(whisperCloudProvider)
         sarvamCloudProvider = SarvamCloudProvider(context)
         providersM.add(sarvamCloudProvider)
+        whisperCloudProvider = WhisperCloudProvider(context)
+        providersM.add(whisperCloudProvider)
         providers = providersM
     }
 
