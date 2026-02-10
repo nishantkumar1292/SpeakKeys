@@ -8,10 +8,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
-    <!--  The app calling the SpeechRecognitionService gets ERROR_INSUFFICIENT_PERMISSIONS if we can't query for them (even if they have microphone permission) -->
-    <uses-permission
-        android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
 
     <application
         android:name=".SayboardApplication"
@@ -38,22 +34,6 @@
                 android:resource="@xml/method" />
         </service>
 
-        <service
-            android:name="com.elishaazaria.sayboard.services.SayboardRecognitionService"
-            android:exported="true"
-            android:foregroundServiceType="microphone"
-            android:label="@string/app_name"
-            android:permission="android.permission.RECORD_AUDIO">
-            <intent-filter>
-                <action android:name="android.speech.RecognitionService" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.speech"
-                android:resource="@xml/recognition_service" />
-        </service>
 
         <activity
             android:name="com.elishaazaria.sayboard.SettingsActivity"

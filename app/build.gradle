@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 apply plugin: 'com.mikepenz.aboutlibraries.plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 
 // Load local.properties for API keys
@@ -12,11 +13,11 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "com.elishaazaria.sayboard"
         minSdkVersion 23
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 402010
         versionName "v4.2.1"
 
@@ -60,9 +61,6 @@ android {
         viewBinding true
         compose true
         buildConfig true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
     }
 
     namespace 'com.elishaazaria.sayboard'

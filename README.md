@@ -34,7 +34,6 @@ Only backends with a configured API key will be available in the app.
 - POST_NOTIFICATIONS - to show download and import progress.
 - FOREGROUND_SERVICE - for the RecognitionService.
 - FOREGROUND_SERVICE_MICROPHONE - for the RecognitionService.
-- QUERY_ALL_PACKAGES - due to a bug in Android, this permission is required for a speech RecognitionService to work properly (see https://github.com/Kaljurand/K6nele-service/issues/9).
 
 ## Demo
 
