@@ -24,9 +24,6 @@ API keys are configured at runtime in the app. Go to **Settings > API** tab to e
 
 - INTERNET - required for cloud speech recognition.
 - RECORD_AUDIO - this is a voice keyboard after all.
-- POST_NOTIFICATIONS - to show download and import progress.
-- FOREGROUND_SERVICE - for the RecognitionService.
-- FOREGROUND_SERVICE_MICROPHONE - for the RecognitionService.
 
 ## Demo
 
