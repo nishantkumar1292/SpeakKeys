@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -127,6 +128,7 @@ class SettingsActivity : ComponentActivity() {
             Box(
                 modifier = Modifier
                     .padding(it)
+                    .statusBarsPadding()
                     .padding(10.dp)
             ) {
                 when (selectedIndex) {
