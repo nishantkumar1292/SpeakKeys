@@ -1,7 +1,8 @@
-<img align="left" width="80" height="80"
-src="app/src/main/ic_launcher-playstore.png" alt="App icon">
+<p align="center">
+  <img src="app/src/main/ic_launcher-playstore.png" width="100" height="100" alt="App icon">
+</p>
 
-# SpeakKeys
+<h1 align="center">SpeakKeys</h1>
 
 SpeakKeys is an open-source Android voice keyboard (IME) that uses cloud-based speech recognition. It supports two backends:
 
