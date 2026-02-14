@@ -63,8 +63,7 @@ class WhisperCloudRecognizer(
     }
 
     override fun getPartialResult(): String {
-        // Show "..." to indicate recording is happening
-        return if (bufferPosition > sampleRate.toInt() / 2) "..." else ""
+        return ""
     }
 
     override fun getFinalResult(): String {
