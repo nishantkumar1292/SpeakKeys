@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#4CAF50</color><!-- Green 500 -->
-    <!--    <color name="colorPrimaryDark">#388E3C</color>&lt;!&ndash; Green 700 &ndash;&gt;-->
-    <color name="colorAccent">#FF9800</color><!-- Orange 500 -->
-    <!--    <color name="colorAccentDark">#F57C00</color>&lt;!&ndash; Orange 700 &ndash;&gt;-->
+    <color name="colorPrimary">#1F5DD7</color>
+    <!--    <color name="colorPrimaryDark">#184CB0</color>-->
+    <color name="colorAccent">#4A82E8</color>
+    <!--    <color name="colorAccentDark">#184CB0</color>-->
 
-    <color name="colorOnPrimary">#377A00</color>
+    <color name="colorOnPrimary">#1F5DD7</color>
 
     <color name="materialYouForegroundLight">@color/colorOnPrimary</color>
     <color name="materialYouForegroundDark">@color/colorOnPrimary</color>

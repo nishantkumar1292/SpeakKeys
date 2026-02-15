@@ -94,7 +94,7 @@ class AppPrefs : PreferenceModel("example-app-preferences") {
     )
     val uiDayForeground = int(
         key = "c_day_foreground_color",
-        default = Color(0xFF4A9E99).toArgb()  // Teal
+        default = Color(0xFF1F5DD7).toArgb()
     )
     val uiDayBackground = int(
         key = "c_day_background_color",
@@ -107,11 +107,11 @@ class AppPrefs : PreferenceModel("example-app-preferences") {
     )
     val uiNightForeground = int(
         key = "c_night_foreground_color",
-        default = Color(0xFF5CB8B2).toArgb()  // Soft teal
+        default = Color(0xFF4A82E8).toArgb()
     )
     val uiNightBackground = int(
         key = "c_night_background_color",
-        default = Color(0xFF16162A).toArgb()  // Deep navy
+        default = Color(0xFF111C39).toArgb()
     )
 
     val lastSelectedModelPath = string(

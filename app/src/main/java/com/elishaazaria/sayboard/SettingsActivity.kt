@@ -25,7 +25,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -36,7 +35,6 @@ import com.elishaazaria.sayboard.ui.KeyboardSettingsUi
 import com.elishaazaria.sayboard.ui.LogicSettingsUi
 import com.elishaazaria.sayboard.ui.ModelsSettingsUi
 import com.elishaazaria.sayboard.ui.ApiSettingsUi
-import com.elishaazaria.sayboard.ui.UISettingsUi
 
 class SettingsActivity : ComponentActivity() {
 
@@ -77,7 +75,6 @@ class SettingsActivity : ComponentActivity() {
     private fun MainUi() {
         val tabs = listOf<String>(
             stringResource(id = R.string.title_models),
-            stringResource(id = R.string.title_ui),
             stringResource(id = R.string.title_keyboard),
             stringResource(id = R.string.title_logic),
             stringResource(id = R.string.title_api)
@@ -100,21 +97,16 @@ class SettingsActivity : ComponentActivity() {
                                 )
 
                                 1 -> Icon(
-                                    painter = painterResource(id = R.drawable.ic_baseline_color_lens_24),
-                                    contentDescription = null
-                                )
-
-                                2 -> Icon(
                                     imageVector = Icons.Default.Keyboard,
                                     contentDescription = null
                                 )
 
-                                3 -> Icon(
+                                2 -> Icon(
                                     imageVector = Icons.Default.Settings,
                                     contentDescription = null
                                 )
 
-                                4 -> Icon(
+                                3 -> Icon(
                                     imageVector = Icons.Default.Lock,
                                     contentDescription = null
                                 )
@@ -133,10 +125,9 @@ class SettingsActivity : ComponentActivity() {
             ) {
                 when (selectedIndex) {
                     0 -> modelSettingsUi.Content()
-                    1 -> UISettingsUi()
-                    2 -> KeyboardSettingsUi()
-                    3 -> LogicSettingsUi(this@SettingsActivity)
-                    4 -> ApiSettingsUi()
+                    1 -> KeyboardSettingsUi()
+                    2 -> LogicSettingsUi(this@SettingsActivity)
+                    3 -> ApiSettingsUi()
                 }
             }
         }

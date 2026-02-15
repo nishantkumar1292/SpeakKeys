@@ -42,6 +42,11 @@
 
     <string name="keyboard_not_enabled">Enable Keyboard</string>
     <string name="keyboard_enabled">Keyboard Enabled</string>
+    <string name="setup_title">Set up SpeakKeys</string>
+    <string name="setup_reason">To use voice typing, SpeakKeys needs microphone and keyboard access.</string>
+    <string name="setup_step_1">1. Grant microphone permission.</string>
+    <string name="setup_step_2">2. Enable SpeakKeys in Android keyboard settings.</string>
+    <string name="setup_data_path">Audio goes directly from your phone to your selected provider.</string>
 
     <string name="switch_keyboard">Switch Keyboard</string>
     <string name="open_ime_switcher">Open IME Switcher</string>
