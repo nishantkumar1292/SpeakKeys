@@ -90,6 +90,7 @@ class ActionManager(private val ime: IME, private val viewManager: ViewManager) 
             val result: Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 ime.switchToPreviousInputMethod()
             } else {
+                @Suppress("DEPRECATION")
                 mInputMethodManager.switchToLastInputMethod(ime.token)
             }
             if (!result) {

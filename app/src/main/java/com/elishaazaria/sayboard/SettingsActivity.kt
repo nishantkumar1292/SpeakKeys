@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.BottomNavigation
@@ -84,7 +85,7 @@ class SettingsActivity : ComponentActivity() {
         }
 
         Scaffold(bottomBar = {
-            BottomNavigation() {
+            BottomNavigation(modifier = Modifier.navigationBarsPadding()) {
                 tabs.forEachIndexed { index, tab ->
                     BottomNavigationItem(
                         selected = index == selectedIndex,
