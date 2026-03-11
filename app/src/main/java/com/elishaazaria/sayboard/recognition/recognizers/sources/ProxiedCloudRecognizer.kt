@@ -27,6 +27,8 @@ class ProxiedCloudRecognizer(
     companion object {
         private const val TAG = "ProxiedCloudRecognizer"
         const val PROXY_BASE_URL = "https://asia-south1-speakkeys.cloudfunctions.net"
+        private const val MAX_RETRIES = 2
+        private const val RETRY_DELAY_MS = 1500L
     }
 
     override val sampleRate: Float = 16000f
@@ -79,60 +81,75 @@ class ProxiedCloudRecognizer(
         val wavBytes = createWavBytes()
         Log.d(TAG, "Created WAV: ${wavBytes.size} bytes")
 
-        try {
-            val bodyBuilder = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(
-                    "file",
-                    "audio.wav",
-                    wavBytes.toRequestBody("audio/wav".toMediaType())
-                )
-                .addFormDataPart("provider", provider)
+        for (attempt in 0..MAX_RETRIES) {
+            try {
+                val bodyBuilder = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart(
+                        "file",
+                        "audio.wav",
+                        wavBytes.toRequestBody("audio/wav".toMediaType())
+                    )
+                    .addFormDataPart("provider", provider)
 
-            // Add all provider-specific params
-            for ((key, value) in providerParams) {
-                if (value.isNotEmpty()) {
-                    bodyBuilder.addFormDataPart(key, value)
-                }
-            }
-
-            val request = Request.Builder()
-                .url("${PROXY_BASE_URL}/transcribe")
-                .addHeader("Authorization", "Bearer $firebaseIdToken")
-                .post(bodyBuilder.build())
-                .build()
-
-            Log.d(TAG, "Sending request to proxy...")
-            val response = client.newCall(request).execute()
-
-            when {
-                response.isSuccessful -> {
-                    val responseBody = response.body?.string()
-                    if (responseBody != null) {
-                        val json = JSONObject(responseBody)
-                        var text = when (provider) {
-                            "sarvam" -> json.optString("transcript", "").trim()
-                            else -> json.optString("text", "").trim()
-                        }
-
-                        if (transliterateToRoman) {
-                            text = DevanagariTransliterator.transliterate(text)
-                        }
-
-                        lastResult = removeSpaceForLocale(text)
+                // Add all provider-specific params
+                for ((key, value) in providerParams) {
+                    if (value.isNotEmpty()) {
+                        bodyBuilder.addFormDataPart(key, value)
                     }
                 }
-                response.code == 402 -> {
-                    Log.w(TAG, "Access denied: ${response.code}")
+
+                val request = Request.Builder()
+                    .url("${PROXY_BASE_URL}/transcribe")
+                    .addHeader("Authorization", "Bearer $firebaseIdToken")
+                    .post(bodyBuilder.build())
+                    .build()
+
+                Log.d(TAG, "Sending request to proxy (attempt ${attempt + 1})...")
+                val response = client.newCall(request).execute()
+
+                when {
+                    response.isSuccessful -> {
+                        val responseBody = response.body?.string()
+                        if (responseBody != null) {
+                            val json = JSONObject(responseBody)
+                            var text = when (provider) {
+                                "sarvam" -> json.optString("transcript", "").trim()
+                                else -> json.optString("text", "").trim()
+                            }
+
+                            if (transliterateToRoman) {
+                                text = DevanagariTransliterator.transliterate(text)
+                            }
+
+                            lastResult = removeSpaceForLocale(text)
+                        }
+                        bufferPosition = 0
+                        return // Success, no retry needed
+                    }
+                    response.code == 402 -> {
+                        // Quota/access error - don't retry
+                        Log.w(TAG, "Access denied: ${response.code}")
+                        bufferPosition = 0
+                        return
+                    }
+                    else -> {
+                        Log.e(TAG, "Proxy error: ${response.code} (attempt ${attempt + 1}/${MAX_RETRIES + 1})")
+                        response.body?.close()
+                        if (attempt < MAX_RETRIES) {
+                            Thread.sleep(RETRY_DELAY_MS)
+                        }
+                    }
                 }
-                else -> {
-                    Log.e(TAG, "Proxy error: ${response.code}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Transcription via proxy failed (attempt ${attempt + 1}/${MAX_RETRIES + 1})", e)
+                if (attempt < MAX_RETRIES) {
+                    Thread.sleep(RETRY_DELAY_MS)
                 }
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Transcription via proxy failed", e)
         }
 
+        Log.e(TAG, "All ${MAX_RETRIES + 1} transcription attempts failed")
         bufferPosition = 0
     }
 

@@ -3,9 +3,9 @@ package com.elishaazaria.sayboard
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -40,8 +40,6 @@ import com.elishaazaria.sayboard.ui.KeyboardSettingsUi
 import com.elishaazaria.sayboard.ui.LogicSettingsUi
 import com.elishaazaria.sayboard.ui.ModelsSettingsUi
 import com.elishaazaria.sayboard.ui.ApiSettingsUi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SettingsActivity : ComponentActivity() {
@@ -80,32 +78,17 @@ class SettingsActivity : ComponentActivity() {
                             startActivity(Intent("android.settings.INPUT_METHOD_SETTINGS"))
                         },
                         onSignIn = {
-                            @Suppress("deprecation")
-                            startActivityForResult(
-                                AuthManager.getSignInIntent(this),
-                                AuthManager.RC_SIGN_IN
-                            )
+                            lifecycleScope.launch {
+                                if (AuthManager.signIn(this@SettingsActivity)) {
+                                    signedIn.postValue(true)
+                                }
+                            }
                         },
                         onSkipSignIn = {
                             // Permissions are granted, skip sign-in and go to main UI
                             checkPermissions()
                         }
                     )
-                }
-            }
-        }
-    }
-
-    @Suppress("deprecation")
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == AuthManager.RC_SIGN_IN) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val success = AuthManager.handleSignInResult(data)
-                if (success) {
-                    Log.d("SettingsActivity", "Google Sign-In successful")
-                    signedIn.postValue(true)
                 }
             }
         }
@@ -175,15 +158,17 @@ class SettingsActivity : ComponentActivity() {
                         activity = this@SettingsActivity,
                         isSignedIn = isSignedIn.value,
                         onSignIn = {
-                            @Suppress("deprecation")
-                            startActivityForResult(
-                                AuthManager.getSignInIntent(this@SettingsActivity),
-                                AuthManager.RC_SIGN_IN
-                            )
+                            lifecycleScope.launch {
+                                if (AuthManager.signIn(this@SettingsActivity)) {
+                                    signedIn.postValue(true)
+                                }
+                            }
                         },
                         onSignOut = {
-                            AuthManager.signOut(this@SettingsActivity)
-                            signedIn.postValue(false)
+                            lifecycleScope.launch {
+                                AuthManager.signOut(this@SettingsActivity)
+                                signedIn.postValue(false)
+                            }
                         }
                     )
                     1 -> modelSettingsUi.Content()

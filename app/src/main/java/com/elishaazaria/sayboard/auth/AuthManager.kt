@@ -1,27 +1,24 @@
 package com.elishaazaria.sayboard.auth
 
-import android.app.Activity
-import android.content.Intent
+import android.content.Context
 import android.util.Log
+import androidx.credentials.ClearCredentialStateRequest
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
 import com.elishaazaria.sayboard.AppCtx
 import com.elishaazaria.sayboard.R
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
 
-@Suppress("deprecation")
 object AuthManager {
     private const val TAG = "AuthManager"
 
     private fun webClientId(): String =
         AppCtx.getStringRes(R.string.default_web_client_id)
-
-    const val RC_SIGN_IN = 9001
 
     private val auth: FirebaseAuth get() = FirebaseAuth.getInstance()
 
@@ -39,47 +36,57 @@ object AuthManager {
      * Get a fresh Firebase ID token for authenticating with our proxy.
      * Tries cached token first, then force-refreshes on failure (e.g. after
      * overnight idle when the cached token has expired and auto-refresh fails).
+     * Retries up to [MAX_TOKEN_RETRIES] times with exponential backoff for
+     * transient network failures.
      */
+    private const val MAX_TOKEN_RETRIES = 3
+    private const val INITIAL_RETRY_DELAY_MS = 1000L
+
     suspend fun getIdToken(): String? {
         val user = currentUser ?: return null
-        return try {
-            user.getIdToken(false).await().token
-        } catch (e: Exception) {
-            Log.w(TAG, "Cached token fetch failed, force-refreshing", e)
+
+        repeat(MAX_TOKEN_RETRIES) { attempt ->
             try {
-                user.getIdToken(true).await().token
-            } catch (e2: Exception) {
-                Log.e(TAG, "Force-refresh also failed", e2)
-                null
+                return user.getIdToken(false).await().token
+            } catch (e: Exception) {
+                Log.w(TAG, "Cached token fetch failed (attempt ${attempt + 1}), force-refreshing", e)
+                try {
+                    return user.getIdToken(true).await().token
+                } catch (e2: Exception) {
+                    Log.e(TAG, "Force-refresh also failed (attempt ${attempt + 1}/$MAX_TOKEN_RETRIES)", e2)
+                    if (attempt < MAX_TOKEN_RETRIES - 1) {
+                        val delay = INITIAL_RETRY_DELAY_MS * (1L shl attempt)
+                        Log.d(TAG, "Retrying in ${delay}ms...")
+                        kotlinx.coroutines.delay(delay)
+                    }
+                }
             }
         }
+        Log.e(TAG, "All $MAX_TOKEN_RETRIES token attempts exhausted")
+        return null
     }
 
     /**
-     * Build the Google Sign-In intent. Call this from an Activity
-     * and use startActivityForResult with RC_SIGN_IN.
-     */
-    fun getSignInIntent(activity: Activity): Intent {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(webClientId())
-            .requestEmail()
-            .build()
-
-        val client: GoogleSignInClient = GoogleSignIn.getClient(activity, gso)
-        return client.signInIntent
-    }
-
-    /**
-     * Handle the result from Google Sign-In intent.
-     * Call this from onActivityResult when requestCode == RC_SIGN_IN.
+     * Sign in with Google using Credential Manager.
      * Returns true if sign-in succeeded.
      */
-    suspend fun handleSignInResult(data: Intent?): Boolean {
+    suspend fun signIn(context: Context): Boolean {
         return try {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            val account = task.getResult(ApiException::class.java)
-            val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
-            auth.signInWithCredential(credential).await()
+            val credentialManager = CredentialManager.create(context)
+
+            val googleIdOption = GetGoogleIdOption.Builder()
+                .setServerClientId(webClientId())
+                .setFilterByAuthorizedAccounts(false)
+                .build()
+
+            val request = GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
+
+            val result = credentialManager.getCredential(context, request)
+            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
+            val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
+            auth.signInWithCredential(firebaseCredential).await()
             Log.d(TAG, "Sign-in successful: ${currentUser?.email}")
             true
         } catch (e: Exception) {
@@ -88,16 +95,16 @@ object AuthManager {
         }
     }
 
-    fun signOut(activity: Activity) {
+    /**
+     * Sign out from both Firebase and Credential Manager.
+     */
+    suspend fun signOut(context: Context) {
         auth.signOut()
-
-        // Also sign out from Google to allow account picker next time
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(webClientId())
-            .requestEmail()
-            .build()
-        GoogleSignIn.getClient(activity, gso).signOut()
-
+        try {
+            CredentialManager.create(context).clearCredentialState(ClearCredentialStateRequest())
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to clear credential state", e)
+        }
         Log.d(TAG, "Signed out")
     }
 }
