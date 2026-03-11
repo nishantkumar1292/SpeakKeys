@@ -81,6 +81,7 @@ class SettingsActivity : ComponentActivity() {
                             lifecycleScope.launch {
                                 if (AuthManager.signIn(this@SettingsActivity)) {
                                     signedIn.postValue(true)
+                                    modelSettingsUi.onResume()
                                 }
                             }
                         },
@@ -161,6 +162,7 @@ class SettingsActivity : ComponentActivity() {
                             lifecycleScope.launch {
                                 if (AuthManager.signIn(this@SettingsActivity)) {
                                     signedIn.postValue(true)
+                                    modelSettingsUi.onResume()
                                 }
                             }
                         },
@@ -168,6 +170,7 @@ class SettingsActivity : ComponentActivity() {
                             lifecycleScope.launch {
                                 AuthManager.signOut(this@SettingsActivity)
                                 signedIn.postValue(false)
+                                modelSettingsUi.onResume()
                             }
                         }
                     )
