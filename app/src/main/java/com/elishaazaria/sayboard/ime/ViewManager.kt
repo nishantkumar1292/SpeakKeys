@@ -39,11 +39,17 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.darkColors
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Backspace
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.KeyboardReturn
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicNone
 import androidx.compose.material.icons.filled.MicOff
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +70,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -95,6 +102,8 @@ class ViewManager(private val ime: Context) : AbstractComposeView(ime), Observer
     val stateLD = MutableLiveData(STATE_INITIAL)
     val errorMessageLD = MutableLiveData(R.string.mic_info_error)
     val keyboardModeLD = MutableLiveData(KeyboardMode.VOICE)
+    val enterActionLabelLD = MutableLiveData(ime.getString(R.string.ime_action_enter))
+    val enterActionVisualLD = MutableLiveData(EnterActionVisual.ENTER)
     val recordDevice: MutableLiveData<AudioDeviceInfo?> = MutableLiveData()
     val showDevicesPopupLD = MutableLiveData(false)
 
@@ -109,6 +118,8 @@ class ViewManager(private val ime: Context) : AbstractComposeView(ime), Observer
         val state by stateLD.observeAsState(STATE_INITIAL)
         val errorMessage by errorMessageLD.observeAsState(R.string.mic_info_error)
         val keyboardMode by keyboardModeLD.observeAsState(KeyboardMode.VOICE)
+        val enterActionLabel by enterActionLabelLD.observeAsState(ime.getString(R.string.ime_action_enter))
+        val enterActionVisual by enterActionVisualLD.observeAsState(EnterActionVisual.ENTER)
         val showDevicesPopup by showDevicesPopupLD.observeAsState(false)
 
         val height =
@@ -178,12 +189,15 @@ class ViewManager(private val ime: Context) : AbstractComposeView(ime), Observer
                             BottomBar(
                                 enabled = controlsEnabled,
                                 onBg = onBg,
+                                actionLabel = enterActionLabel,
+                                actionVisual = enterActionVisual,
                                 onToggleMode = { listener?.toggleKeyboardMode() },
                                 onInsertSpace = { listener?.buttonClicked(" ") },
                                 onCursorLeft = { listener?.cursorLeftClicked() },
                                 onCursorRight = { listener?.cursorRightClicked() },
                                 onBackspace = { listener?.backspaceClicked() },
-                                onSettings = { listener?.settingsClicked() }
+                                onSettings = { listener?.settingsClicked() },
+                                onEnter = { listener?.enterClicked() }
                             )
                         }
                     }
@@ -201,6 +215,9 @@ class ViewManager(private val ime: Context) : AbstractComposeView(ime), Observer
                                 onCursorRight = { listener?.cursorRightClicked() },
                                 onInsertSpace = { listener?.buttonClicked(" ") },
                                 onToggleVoiceMode = { listener?.toggleKeyboardMode() },
+                                actionLabel = enterActionLabel,
+                                actionVisual = enterActionVisual,
+                                onEnter = { listener?.enterClicked() },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f)
@@ -238,6 +255,7 @@ class ViewManager(private val ime: Context) : AbstractComposeView(ime), Observer
     }
 
     enum class KeyboardMode { VOICE, TYPING }
+    enum class EnterActionVisual { ENTER, GO, SEARCH, SEND, NEXT, DONE, PREVIOUS }
 
     interface Listener {
         fun micPressStart()
@@ -248,6 +266,7 @@ class ViewManager(private val ime: Context) : AbstractComposeView(ime), Observer
         fun toggleKeyboardMode()
         fun cursorLeftClicked()
         fun cursorRightClicked()
+        fun enterClicked()
     }
 
     companion object {
@@ -445,12 +464,15 @@ private fun androidx.compose.foundation.layout.ColumnScope.MicArea(
 private fun BottomBar(
     enabled: Boolean,
     onBg: Color,
+    actionLabel: String,
+    actionVisual: ViewManager.EnterActionVisual,
     onToggleMode: () -> Unit,
     onInsertSpace: () -> Unit,
     onCursorLeft: () -> Unit,
     onCursorRight: () -> Unit,
     onBackspace: () -> Unit,
-    onSettings: () -> Unit
+    onSettings: () -> Unit,
+    onEnter: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -488,6 +510,14 @@ private fun BottomBar(
             backgroundColor = DarkSurfaceVariant,
             tint = onBg.copy(alpha = if (enabled) 0.7f else 0.35f),
             onClick = onSettings
+        )
+
+        ActionButton(
+            label = actionLabel,
+            visual = actionVisual,
+            enabled = enabled,
+            onBg = onBg,
+            onClick = onEnter
         )
     }
 }
@@ -614,6 +644,43 @@ private fun BackspaceButton(
             tint = onBg.copy(alpha = if (enabled) 0.7f else 0.35f),
             modifier = Modifier.size(20.dp)
         )
+    }
+}
+
+@Composable
+private fun ActionButton(
+    label: String,
+    visual: ViewManager.EnterActionVisual,
+    enabled: Boolean,
+    onBg: Color,
+    onClick: () -> Unit
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(48.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (enabled) DarkSurfaceVariant else DarkSurfaceVariant.copy(alpha = 0.45f))
+            .clickable(enabled = enabled, onClick = onClick)
+    ) {
+        Icon(
+            imageVector = enterActionIcon(visual),
+            contentDescription = label,
+            tint = onBg.copy(alpha = if (enabled) 0.78f else 0.35f),
+            modifier = Modifier.size(20.dp)
+        )
+    }
+}
+
+internal fun enterActionIcon(visual: ViewManager.EnterActionVisual): ImageVector {
+    return when (visual) {
+        ViewManager.EnterActionVisual.ENTER -> Icons.Default.KeyboardReturn
+        ViewManager.EnterActionVisual.GO -> Icons.Default.ArrowForward
+        ViewManager.EnterActionVisual.SEARCH -> Icons.Default.Search
+        ViewManager.EnterActionVisual.SEND -> Icons.Default.Send
+        ViewManager.EnterActionVisual.NEXT -> Icons.Default.ArrowForward
+        ViewManager.EnterActionVisual.DONE -> Icons.Default.Check
+        ViewManager.EnterActionVisual.PREVIOUS -> Icons.Default.ArrowBack
     }
 }
 

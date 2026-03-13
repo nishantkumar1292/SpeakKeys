@@ -15,8 +15,8 @@ android {
         applicationId "com.elishaazaria.sayboard"
         minSdk = 24
         targetSdk = 35
-        versionCode = 402016
-        versionName = "v4.2.7"
+        versionCode = 402017
+        versionName = "v4.2.8"
 
     }
     buildTypes {
@@ -24,7 +24,7 @@ android {
             minifyEnabled true
             shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            ndk { debugSymbolLevel 'FULL' }
+            ndk { debugSymbolLevel = 'FULL' }
         }
     }
     splits {
@@ -55,7 +55,7 @@ android {
     }
 
     lint {
-        lintConfig = file("app/lint.xml")
+        lintConfig = file("lint.xml")
     }
 }
 
@@ -69,10 +69,14 @@ androidComponents {
                     output.outputFileName.set("SpeakKeys_${abiFilter ?: "Universal"}.apk")
                 }
                 def abiVersionCode = abiCodes[abiFilter]
-                if (abiVersionCode != null) output.versionCode.set(402016 + abiVersionCode)
+                if (abiVersionCode != null) output.versionCode.set(402017 + abiVersionCode)
             }
         }
     }
+}
+
+googleServices {
+    disableVersionCheck = true
 }
 
 dependencies {

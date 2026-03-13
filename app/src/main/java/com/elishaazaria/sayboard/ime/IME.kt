@@ -49,6 +49,10 @@ class IME : InputMethodService(), ModelManager.Listener {
 
     public var enterAction = EditorInfo.IME_ACTION_UNSPECIFIED
         private set
+    var enterActionLabel = ""
+        private set
+    var enterActionVisual = ViewManager.EnterActionVisual.ENTER
+        private set
 
     var isRichTextEditor = true
         private set
@@ -130,22 +134,54 @@ class IME : InputMethodService(), ModelManager.Listener {
 
         checkMicrophonePermission()
         editorInfo = info
-        enterAction = findEnterAction()
+        resolveEnterKey()
         isRichTextEditor =
             editorInfo.inputType and InputType.TYPE_MASK_CLASS != EditorInfo.TYPE_NULL ||
                     editorInfo.initialSelStart >= 0 && editorInfo.initialSelEnd >= 0 // based on florisboard code
         textManager.onResume()
         setKeepScreenOn(prefs.logicKeepScreenAwake.get() == KeepScreenAwakeMode.WHEN_OPEN)
+        viewManager.enterActionLabelLD.postValue(enterActionLabel)
+        viewManager.enterActionVisualLD.postValue(enterActionVisual)
         actionManager.onStartInputView()
     }
 
-    private fun findEnterAction(): Int {
-        val action = editorInfo.imeOptions and EditorInfo.IME_MASK_ACTION
-        if (editorInfo.imeOptions and EditorInfo.IME_FLAG_NO_ENTER_ACTION == 0 && action in editorActions) {
-            return action
+    private fun resolveEnterKey() {
+        enterAction = EditorInfo.IME_ACTION_UNSPECIFIED
+        enterActionLabel = getString(R.string.ime_action_enter)
+        enterActionVisual = ViewManager.EnterActionVisual.ENTER
+
+        if (editorInfo.imeOptions and EditorInfo.IME_FLAG_NO_ENTER_ACTION != 0) {
+            return
         }
 
-        return EditorInfo.IME_ACTION_UNSPECIFIED
+        val action = editorInfo.imeOptions and EditorInfo.IME_MASK_ACTION
+        val customLabel = editorInfo.actionLabel?.toString()?.trim().orEmpty()
+        val customActionId = when {
+            editorInfo.actionId != 0 -> editorInfo.actionId
+            action in actionableEditorActions -> action
+            else -> EditorInfo.IME_ACTION_UNSPECIFIED
+        }
+
+        if (customLabel.isNotEmpty() && customActionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
+            enterAction = customActionId
+            enterActionLabel = customLabel
+            enterActionVisual = toEnterActionVisual(customActionId)
+            return
+        }
+
+        if (action in actionableEditorActions) {
+            enterAction = action
+            enterActionVisual = toEnterActionVisual(action)
+            enterActionLabel = when (action) {
+                EditorInfo.IME_ACTION_GO -> getString(R.string.ime_action_go)
+                EditorInfo.IME_ACTION_SEARCH -> getString(R.string.ime_action_search)
+                EditorInfo.IME_ACTION_SEND -> getString(R.string.ime_action_send)
+                EditorInfo.IME_ACTION_NEXT -> getString(R.string.ime_action_next)
+                EditorInfo.IME_ACTION_DONE -> getString(R.string.ime_action_done)
+                EditorInfo.IME_ACTION_PREVIOUS -> getString(R.string.ime_action_previous)
+                else -> getString(R.string.ime_action_enter)
+            }
+        }
     }
 
     /**
@@ -161,6 +197,8 @@ class IME : InputMethodService(), ModelManager.Listener {
         cancelHoldTimers()
         setKeepScreenOn(false)
         modelManager.stop(!prefs.logicKeepModelInRam.get())
+        viewManager.enterActionLabelLD.postValue(getString(R.string.ime_action_enter))
+        viewManager.enterActionVisualLD.postValue(ViewManager.EnterActionVisual.ENTER)
         if (prefs.logicAutoSwitchBack.get()) {
             // switch back
             actionManager.switchToLastIme(false)
@@ -232,6 +270,10 @@ class IME : InputMethodService(), ModelManager.Listener {
 
         override fun cursorRightClicked() {
             actionManager.moveCursorRight()
+        }
+
+        override fun enterClicked() {
+            actionManager.sendEnter()
         }
     }
 
@@ -425,9 +467,7 @@ class IME : InputMethodService(), ModelManager.Listener {
     companion object {
         private const val HOLD_WARNING_MS = 27_000L
         private const val HOLD_AUTO_STOP_MS = 30_000L
-        private val editorActions = intArrayOf(
-            EditorInfo.IME_ACTION_UNSPECIFIED,
-            EditorInfo.IME_ACTION_NONE,
+        private val actionableEditorActions = intArrayOf(
             EditorInfo.IME_ACTION_GO,
             EditorInfo.IME_ACTION_SEARCH,
             EditorInfo.IME_ACTION_SEND,
@@ -435,5 +475,17 @@ class IME : InputMethodService(), ModelManager.Listener {
             EditorInfo.IME_ACTION_DONE,
             EditorInfo.IME_ACTION_PREVIOUS
         )
+    }
+
+    private fun toEnterActionVisual(action: Int): ViewManager.EnterActionVisual {
+        return when (action) {
+            EditorInfo.IME_ACTION_GO -> ViewManager.EnterActionVisual.GO
+            EditorInfo.IME_ACTION_SEARCH -> ViewManager.EnterActionVisual.SEARCH
+            EditorInfo.IME_ACTION_SEND -> ViewManager.EnterActionVisual.SEND
+            EditorInfo.IME_ACTION_NEXT -> ViewManager.EnterActionVisual.NEXT
+            EditorInfo.IME_ACTION_DONE -> ViewManager.EnterActionVisual.DONE
+            EditorInfo.IME_ACTION_PREVIOUS -> ViewManager.EnterActionVisual.PREVIOUS
+            else -> ViewManager.EnterActionVisual.ENTER
+        }
     }
 }

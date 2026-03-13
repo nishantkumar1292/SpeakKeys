@@ -156,6 +156,13 @@
 
     <string name="button_save">Save</string>
     <string name="button_clear">Clear</string>
+    <string name="ime_action_enter">Enter</string>
+    <string name="ime_action_go">Go</string>
+    <string name="ime_action_search">Search</string>
+    <string name="ime_action_send">Send</string>
+    <string name="ime_action_next">Next</string>
+    <string name="ime_action_done">Done</string>
+    <string name="ime_action_previous">Previous</string>
 
     <!--  Account  -->
     <string name="title_account">Account</string>

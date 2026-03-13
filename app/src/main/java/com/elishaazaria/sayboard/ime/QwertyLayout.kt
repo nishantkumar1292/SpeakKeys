@@ -64,6 +64,9 @@ fun QwertyLayout(
     onCursorRight: () -> Unit,
     onInsertSpace: () -> Unit,
     onToggleVoiceMode: () -> Unit,
+    actionLabel: String,
+    actionVisual: ViewManager.EnterActionVisual,
+    onEnter: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var shiftState by remember { mutableStateOf(ShiftState.LOWER) }
@@ -150,6 +153,8 @@ fun QwertyLayout(
                     keyBg = keyBg,
                     specialKeyBg = specialKeyBg,
                     textColor = textColor,
+                    actionLabel = actionLabel,
+                    actionVisual = actionVisual,
                     onInsertSpace = {
                         hapticFeedback()
                         onInsertSpace()
@@ -157,6 +162,10 @@ fun QwertyLayout(
                     onToggleVoiceMode = {
                         hapticFeedback()
                         onToggleVoiceMode()
+                    },
+                    onEnter = {
+                        hapticFeedback()
+                        onEnter()
                     }
                 )
             }
@@ -195,6 +204,8 @@ fun QwertyLayout(
                     keyBg = keyBg,
                     specialKeyBg = specialKeyBg,
                     textColor = textColor,
+                    actionLabel = actionLabel,
+                    actionVisual = actionVisual,
                     onInsertSpace = {
                         hapticFeedback()
                         onInsertSpace()
@@ -202,6 +213,10 @@ fun QwertyLayout(
                     onToggleVoiceMode = {
                         hapticFeedback()
                         onToggleVoiceMode()
+                    },
+                    onEnter = {
+                        hapticFeedback()
+                        onEnter()
                     }
                 )
             }
@@ -240,6 +255,8 @@ fun QwertyLayout(
                     keyBg = keyBg,
                     specialKeyBg = specialKeyBg,
                     textColor = textColor,
+                    actionLabel = actionLabel,
+                    actionVisual = actionVisual,
                     onInsertSpace = {
                         hapticFeedback()
                         onInsertSpace()
@@ -247,6 +264,10 @@ fun QwertyLayout(
                     onToggleVoiceMode = {
                         hapticFeedback()
                         onToggleVoiceMode()
+                    },
+                    onEnter = {
+                        hapticFeedback()
+                        onEnter()
                     }
                 )
             }
@@ -436,8 +457,11 @@ private fun ColumnScope.BottomUtilityRow(
     keyBg: androidx.compose.ui.graphics.Color,
     specialKeyBg: androidx.compose.ui.graphics.Color,
     textColor: androidx.compose.ui.graphics.Color,
+    actionLabel: String,
+    actionVisual: ViewManager.EnterActionVisual,
     onInsertSpace: () -> Unit,
-    onToggleVoiceMode: () -> Unit
+    onToggleVoiceMode: () -> Unit,
+    onEnter: () -> Unit
 ) {
     KeyRow(weight = 1f) {
         IconKey(
@@ -452,6 +476,14 @@ private fun ColumnScope.BottomUtilityRow(
             textColor = textColor,
             weight = 4.6f,
             onClick = onInsertSpace
+        )
+        ActionKey(
+            label = actionLabel,
+            visual = actionVisual,
+            bg = specialKeyBg,
+            textColor = textColor,
+            weight = 1.4f,
+            onClick = onEnter
         )
     }
 }
@@ -507,6 +539,34 @@ private fun RowScope.SpaceKey(
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun RowScope.ActionKey(
+    label: String,
+    visual: ViewManager.EnterActionVisual,
+    bg: androidx.compose.ui.graphics.Color,
+    textColor: androidx.compose.ui.graphics.Color,
+    weight: Float,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .weight(weight)
+            .fillMaxHeight()
+            .clip(RoundedCornerShape(5.dp))
+            .background(bg)
+            .pointerInput(label) {
+                detectTapGestures(onTap = { onClick() })
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = enterActionIcon(visual),
+            contentDescription = label,
+            tint = textColor.copy(alpha = 0.75f)
         )
     }
 }
