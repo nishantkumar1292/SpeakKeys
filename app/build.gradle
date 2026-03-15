@@ -15,8 +15,8 @@ android {
         applicationId "com.elishaazaria.sayboard"
         minSdk = 24
         targetSdk = 35
-        versionCode = 402017
-        versionName = "v4.2.8"
+        versionCode = 402018
+        versionName = "v4.2.9"
 
     }
     buildTypes {
@@ -69,7 +69,7 @@ androidComponents {
                     output.outputFileName.set("SpeakKeys_${abiFilter ?: "Universal"}.apk")
                 }
                 def abiVersionCode = abiCodes[abiFilter]
-                if (abiVersionCode != null) output.versionCode.set(402017 + abiVersionCode)
+                if (abiVersionCode != null) output.versionCode.set(402018 + abiVersionCode)
             }
         }
     }

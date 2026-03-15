@@ -18,10 +18,13 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -393,70 +396,77 @@ private fun androidx.compose.foundation.layout.ColumnScope.MicArea(
         }
     }
 
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .scale(pulseScale)
-                .clip(CircleShape)
-                .background(
-                    when {
-                        state == ViewManager.STATE_ERROR -> stateColor.copy(alpha = 0.92f)
-                        isFilledState -> stateColor
-                        else -> stateColor.copy(alpha = 0.15f)
-                    }
-                )
-                .border(
-                    width = if (isFilledState) 0.dp else 2.dp,
-                    color = if (isFilledState) Color.Transparent else stateColor.copy(alpha = 0.5f),
-                    shape = CircleShape
-                )
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onPress = {
-                            onMicPressStart()
-                            try {
-                                tryAwaitRelease()
-                            } finally {
-                                onMicPressEnd()
-                            }
+        val micSize = (maxHeight * 0.65f).coerceAtMost(120.dp)
+        val micIconSize = micSize * 0.4f
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(micSize)
+                    .scale(pulseScale)
+                    .clip(CircleShape)
+                    .background(
+                        when {
+                            state == ViewManager.STATE_ERROR -> stateColor.copy(alpha = 0.92f)
+                            isFilledState -> stateColor
+                            else -> stateColor.copy(alpha = 0.15f)
                         }
                     )
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = if (isFilledState) Color.White else stateColor,
-                modifier = Modifier.size(48.dp)
+                    .border(
+                        width = if (isFilledState) 0.dp else 2.dp,
+                        color = if (isFilledState) Color.Transparent else stateColor.copy(alpha = 0.5f),
+                        shape = CircleShape
+                    )
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = {
+                                onMicPressStart()
+                                try {
+                                    tryAwaitRelease()
+                                } finally {
+                                    onMicPressEnd()
+                                }
+                            }
+                        )
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = if (isFilledState) Color.White else stateColor,
+                    modifier = Modifier.size(micIconSize)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = statusText.uppercase(),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center,
+                color = stateColor.copy(alpha = 0.9f),
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .then(
+                        if (state == ViewManager.STATE_ERROR) {
+                            Modifier.clickable(onClick = onErrorClick)
+                        } else {
+                            Modifier
+                        }
+                    )
             )
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = statusText.uppercase(),
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center,
-            color = stateColor.copy(alpha = 0.9f),
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .then(
-                    if (state == ViewManager.STATE_ERROR) {
-                        Modifier.clickable(onClick = onErrorClick)
-                    } else {
-                        Modifier
-                    }
-                )
-        )
     }
 }
 
@@ -477,7 +487,7 @@ private fun BottomBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 4.dp),
+            .padding(start = 4.dp, end = 4.dp, top = 4.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
