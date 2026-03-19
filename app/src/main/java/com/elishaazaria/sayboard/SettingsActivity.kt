@@ -150,20 +150,14 @@ class SettingsActivity : ComponentActivity() {
                 val isSignedIn = signedIn.observeAsState(AuthManager.isSignedIn)
                 val selectedEngine by prefs.selectedEngine.observeAsState()
                 val sarvamKey by prefs.sarvamApiKey.observeAsState()
-                val lastSelectedModelPath by prefs.lastSelectedModelPath.observeAsState()
-
                 when (selectedIndex) {
                     0 -> {
                         val micOk = micGranted.observeAsState(true).value
                         val imeOk = imeGranted.observeAsState(true).value
                         val isActive = micOk && imeOk && (isSignedIn.value || sarvamKey.isNotEmpty())
-                        val modelName = when (lastSelectedModelPath) {
-                            "sarvam://cloud" -> getString(R.string.engine_sarvam) + " (API Key)"
-                            "proxied://sarvam" -> getString(R.string.engine_speakkeys_auto) + " (Sarvam)"
-                            else -> when (selectedEngine) {
-                                "sarvam" -> getString(R.string.engine_sarvam) + " (API Key)"
-                                else -> getString(R.string.engine_speakkeys_auto) + " (Sarvam)"
-                            }
+                        val modelName = when (selectedEngine) {
+                            "sarvam" -> getString(R.string.engine_sarvam) + " (API Key)"
+                            else -> getString(R.string.engine_speakkeys_auto) + " (Sarvam)"
                         }
                         val needsAuth = !isSignedIn.value && sarvamKey.isEmpty()
                         TestTabUi(
