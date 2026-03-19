@@ -102,7 +102,7 @@ class ViewManager(private val ime: Context) : AbstractComposeView(ime) {
     private val prefs by speakKeysPreferenceModel()
 
     val stateLD = MutableLiveData(STATE_INITIAL)
-    val errorMessageLD = MutableLiveData(R.string.mic_info_error)
+    val errorMessageLD = MutableLiveData(ime.getString(R.string.mic_info_error))
     val keyboardModeLD = MutableLiveData(KeyboardMode.VOICE)
     val enterActionLabelLD = MutableLiveData(ime.getString(R.string.ime_action_enter))
     val enterActionVisualLD = MutableLiveData(EnterActionVisual.ENTER)
@@ -118,7 +118,7 @@ class ViewManager(private val ime: Context) : AbstractComposeView(ime) {
     @Composable
     override fun Content() {
         val state by stateLD.observeAsState(STATE_INITIAL)
-        val errorMessage by errorMessageLD.observeAsState(R.string.mic_info_error)
+        val errorMessage by errorMessageLD.observeAsState(ime.getString(R.string.mic_info_error))
         val keyboardMode by keyboardModeLD.observeAsState(KeyboardMode.VOICE)
         val enterActionLabel by enterActionLabelLD.observeAsState(ime.getString(R.string.ime_action_enter))
         val enterActionVisual by enterActionVisualLD.observeAsState(EnterActionVisual.ENTER)
@@ -342,7 +342,7 @@ private fun SymbolsBar(
 @Composable
 private fun androidx.compose.foundation.layout.ColumnScope.MicArea(
     state: Int,
-    errorMessage: Int,
+    errorMessage: String,
     stateColor: Color,
     onMicPressStart: () -> Unit,
     onMicPressEnd: () -> Unit,
@@ -386,13 +386,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.MicArea(
         ViewManager.STATE_LISTENING -> stringResource(id = R.string.mic_info_release_to_send)
         ViewManager.STATE_LIMIT_WARNING -> stringResource(id = R.string.mic_info_release_soon)
         ViewManager.STATE_PROCESSING -> stringResource(id = R.string.mic_info_processing)
-        else -> {
-            if (errorMessage == R.string.mic_error_no_recognizers) {
-                stringResource(id = R.string.mic_error_no_recognizers_tap_to_configure)
-            } else {
-                stringResource(id = errorMessage)
-            }
-        }
+        else -> errorMessage
     }
 
     BoxWithConstraints(

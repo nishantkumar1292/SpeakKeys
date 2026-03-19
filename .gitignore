@@ -42,3 +42,6 @@ google-services.json
 
 # todo
 TODO.md
+
+# Kotlin metadata/build caches
+.kotlin/

@@ -4,17 +4,20 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
-import androidx.annotation.StringRes
 import com.elishaazaria.sayboard.recognition.logging.Logger
 import androidx.core.app.ActivityCompat
-import com.elishaazaria.sayboard.R
 import com.elishaazaria.sayboard.data.InstalledModelReference
+import com.elishaazaria.sayboard.data.SpeakKeysLocale
 import com.elishaazaria.sayboard.recognition.auth.AuthTokenProvider
 import com.elishaazaria.sayboard.recognition.preferences.PreferencesRepository
 import com.elishaazaria.sayboard.recognition.recognizers.RecognizerSource
 import com.elishaazaria.sayboard.recognition.recognizers.providers.Providers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.util.Locale
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -38,6 +41,7 @@ class ModelManager(
     private var currentRecognizerSourceIndex = 0
     private var currentRecognizerSource: RecognizerSource? = null
     private val executor: Executor = Executors.newSingleThreadExecutor()
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 
     init {
@@ -65,9 +69,13 @@ class ModelManager(
         saveSelectedModel()
         listener.onRecognizerSource(currentRecognizerSource!!)
 
-        currentRecognizerSource!!.initialize(executor) {
+        val source = currentRecognizerSource!!
+        scope.launch {
+            source.initialize()
             if (autoStart) {
-                start(attributionContext) // execute after initialize
+                withContext(Dispatchers.Main) {
+                    start(attributionContext)
+                }
             }
         }
     }
@@ -85,11 +93,11 @@ class ModelManager(
         if (currentRecognizerSourceIndex >= recognizerSources.size) {
             currentRecognizerSourceIndex = 0
         }
-        initializeRecognizer(autoStart, attributionContext) // start is called after the recognizer is initialized
+        initializeRecognizer(autoStart, attributionContext)
     }
 
     fun switchToRecognizerOfLocale(
-        locale: Locale,
+        locale: SpeakKeysLocale,
         autoStart: Boolean,
         attributionContext: Context? = null
     ): Boolean {
@@ -101,24 +109,20 @@ class ModelManager(
             if (recognizerSource.locale.language == locale.language) {
                 if (recognizerSource.locale.country == locale.country) {
                     if (recognizerSource.locale.variant == locale.variant) {
-                        // Same language, country, and variant
                         bestSource = index
                         foundLanguage = true
                         foundCountry = true
                         return@forEachIndexed
                     } else if (!foundCountry) {
-                        // Same language and country, but not variant
                         bestSource = index
                         foundLanguage = true
                         foundCountry = true
                     }
                 } else if (!foundLanguage) {
-                    // Same language, but not country
                     foundLanguage = true
                     bestSource = index
                 }
-            } else if (recognizerSource.locale == Locale.ROOT && !foundLanguage && bestSource == -1) {
-                // A root locale. Pick it if we didn't find anything.
+            } else if (recognizerSource.locale == SpeakKeysLocale.ROOT && !foundLanguage && bestSource == -1) {
                 bestSource = index
             }
         }
@@ -130,10 +134,7 @@ class ModelManager(
         stop(true)
         currentRecognizerSourceIndex = bestSource
 
-        initializeRecognizer(
-            autoStart,
-            attributionContext
-        ) // start is called after the recognizer is initialized
+        initializeRecognizer(autoStart, attributionContext)
 
         return true
     }
@@ -163,7 +164,6 @@ class ModelManager(
                 TAG,
                 "Recognizer Source is closed, re-initializing: ${currentRecognizerSource!!.name}"
             )
-            // Re-initialize the closed recognizer before starting
             initializeRecognizer(true, attributionContext)
             return
         }
@@ -193,7 +193,6 @@ class ModelManager(
     private var pausedState = false
 
     fun reloadModels() {
-        // Sync installed models into modelsOrder (handles newly added/removed API keys)
         val currentModels = prefsRepo.getModelsOrder().toMutableList()
         val installedModels = recognizerSourceProviders.installedModels()
         currentModels.removeAll { it !in installedModels }

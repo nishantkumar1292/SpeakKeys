@@ -346,7 +346,7 @@ class IME : InputMethodService(), ModelManager.Listener {
             this, Manifest.permission.RECORD_AUDIO
         ) == PackageManager.PERMISSION_GRANTED
         if (!hasMicPermission) {
-            viewManager.errorMessageLD.postValue(R.string.mic_error_no_permission)
+            viewManager.errorMessageLD.postValue(getString(R.string.mic_error_no_permission))
             viewManager.stateLD.postValue(ViewManager.STATE_ERROR)
         }
     }
@@ -407,8 +407,8 @@ class IME : InputMethodService(), ModelManager.Listener {
         deferredResults.clear()
         viewManager.errorMessageLD.postValue(
             when (type) {
-                ModelManager.ErrorType.MIC_IN_USE -> R.string.mic_error_mic_in_use
-                ModelManager.ErrorType.NO_RECOGNIZERS_INSTALLED -> R.string.mic_error_no_recognizers
+                ModelManager.ErrorType.MIC_IN_USE -> getString(R.string.mic_error_mic_in_use)
+                ModelManager.ErrorType.NO_RECOGNIZERS_INSTALLED -> getString(R.string.mic_error_no_recognizers)
             }
         )
     }
@@ -416,7 +416,7 @@ class IME : InputMethodService(), ModelManager.Listener {
     override fun onError(e: Exception?) {
         finishProcessing()
         deferredResults.clear()
-        viewManager.errorMessageLD.postValue(R.string.mic_error_recognizer_error)
+        viewManager.errorMessageLD.postValue(getString(R.string.mic_error_recognizer_error))
         viewManager.stateLD.postValue(ViewManager.STATE_ERROR)
     }
 
