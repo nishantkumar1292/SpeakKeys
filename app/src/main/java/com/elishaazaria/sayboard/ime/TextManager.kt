@@ -91,7 +91,7 @@ class TextManager(private val ime: IME, private val modelManager: ModelManager) 
             addSpace = false
             return
         }
-        val cs = ime.currentInputConnection.getTextBeforeCursor(3, 0)
+        val cs = ime.currentInputConnection?.getTextBeforeCursor(3, 0)
         if (cs != null) {
             addSpace = cs.isNotEmpty() && TextProcessor.addSpaceAfter(cs[cs.length - 1])
 
