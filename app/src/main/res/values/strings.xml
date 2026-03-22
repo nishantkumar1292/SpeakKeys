@@ -82,6 +82,14 @@
 
     <string name="ui_theme_reset_color">Reset</string>
 
+    <string name="ui_haptic_header">Haptic Feedback</string>
+    <string name="ui_haptic_enabled_title">Enable haptic feedback</string>
+    <string name="ui_haptic_enabled_summary">Vibrate on key press</string>
+    <string name="ui_haptic_intensity_title">Haptic intensity</string>
+    <string name="haptic_intensity_light">Light</string>
+    <string name="haptic_intensity_medium">Medium</string>
+    <string name="haptic_intensity_strong">Strong</string>
+
     <!--  Logic Preferences  -->
     <string name="logic_logic_header">Logic</string>
     <string name="logic_keep_screen_awake_title">Keep screen awake</string>

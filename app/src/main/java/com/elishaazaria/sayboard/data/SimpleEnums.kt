@@ -26,3 +26,25 @@ enum class KeepScreenAwakeMode {
         }
     }
 }
+
+enum class HapticIntensity(val amplitude: Int) {
+    LIGHT(40), MEDIUM(80), STRONG(180);
+
+    companion object {
+        @Composable
+        fun listEntries() = listPrefEntries {
+            entry(
+                key = LIGHT,
+                label = stringResource(id = R.string.haptic_intensity_light),
+            )
+            entry(
+                key = MEDIUM,
+                label = stringResource(id = R.string.haptic_intensity_medium),
+            )
+            entry(
+                key = STRONG,
+                label = stringResource(id = R.string.haptic_intensity_strong),
+            )
+        }
+    }
+}

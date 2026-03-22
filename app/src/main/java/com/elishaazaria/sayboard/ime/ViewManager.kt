@@ -220,6 +220,8 @@ class ViewManager(private val ime: Context) : AbstractComposeView(ime) {
                                 actionLabel = enterActionLabel,
                                 actionVisual = enterActionVisual,
                                 onEnter = { listener?.enterClicked() },
+                                hapticFeedbackEnabled = prefs.hapticFeedbackEnabled.get(),
+                                hapticFeedbackIntensity = prefs.hapticFeedbackIntensity.get(),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f)
@@ -761,8 +763,8 @@ fun IMETheme(
         background = Color(prefs.uiNightBackground.get()),
         surface = DarkSurface,
         onPrimary = Color.White,
-        onBackground = Color(0xFFF0F0F0),
-        onSurface = Color(0xFFF0F0F0)
+        onBackground = Color(0xFFE8E8E8),
+        onSurface = Color(0xFFE8E8E8)
     )
 
     MaterialTheme(

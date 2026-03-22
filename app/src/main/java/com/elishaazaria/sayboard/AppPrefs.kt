@@ -2,6 +2,7 @@ package com.elishaazaria.sayboard
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import com.elishaazaria.sayboard.data.HapticIntensity
 import com.elishaazaria.sayboard.data.KeepScreenAwakeMode
 import com.elishaazaria.sayboard.utils.ModelListSerializer
 import dev.patrickgold.jetpref.datastore.JetPref
@@ -89,7 +90,17 @@ class AppPrefs : PreferenceModel("example-app-preferences") {
     )
     val uiNightBackground = int(
         key = "c_night_background_color",
-        default = Color(0xFF111C39).toArgb()
+        default = Color(0xFF1B1B1B).toArgb()
+    )
+
+    val hapticFeedbackEnabled = boolean(
+        key = "b_haptic_feedback_enabled",
+        default = true
+    )
+
+    val hapticFeedbackIntensity = enum(
+        key = "e_haptic_feedback_intensity",
+        default = HapticIntensity.MEDIUM
     )
 
     val lastSelectedModelPath = string(

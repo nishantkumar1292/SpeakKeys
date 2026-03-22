@@ -86,6 +86,8 @@ class IME : InputMethodService(), ModelManager.Listener {
 
         lifecycleOwner.onCreate()
 
+        HapticHelper.init(this)
+
         viewManager = ViewManager(this)
         viewManager.setListener(viewManagerListener)
 
