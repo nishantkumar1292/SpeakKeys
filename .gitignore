@@ -45,3 +45,8 @@ TODO.md
 
 # Kotlin metadata/build caches
 .kotlin/
+
+# macOS / Xcode
+macos-app/SpeakKeys/GoogleService-Info.plist
+xcuserdata/
+*.xcuserstate
